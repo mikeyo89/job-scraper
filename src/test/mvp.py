@@ -7,14 +7,14 @@ import sys
 sys.path.insert(0, '/Users/michaelbonilla/Documents/0 Eastern Connecticut State University/2 2021FA/0 CSC-450 Senior Research/0 Assignments/Research Project/job-scraper/src')
 
 from bs4 import BeautifulSoup
-from models.cards import BasicCard
+from models.cards import BasicCard, CardDetails
 
 card_id = 1
+success = 0
+failure = 0
 
 def get_url(position):
-    '''
-    Builds and returns query url based on provided position (what).
-    '''
+    ''' Builds and returns query url based on provided position (what). '''
     template_url = 'https://www.indeed.com/jobs?q={}&l'
     return template_url.format(position)
 
@@ -59,9 +59,9 @@ def get_card(raw_card):
 
     return BasicCard(id, title, company, rating, location, date, link)
 
-def main():
-    # Make an HTTP Request and save HTML text if request is successful.
-    url = get_url('Software Engineer')
+if __name__ == '__main__':
+    # Make an HTTP GET Request and save HTML text if request is successful.
+    url = get_url('software engineer')
     print('Parsing results: 1 - 15')
     response = requests.get(url)
 
@@ -71,18 +71,14 @@ def main():
 
     # Perform field extraction for an entire collection of 'raw cards'.
     records = [get_card(raw_card) for raw_card in raw_cards]
-
+    
     # Iterate through the pagination to collect all cards from the search query.
-    count = 1
-    while True:
+    for count in range(1, 2):
         try:
-            if count > 9:
-                break
             url = 'https://www.indeed.com' + soup.find('a', {'aria-label': 'Next'}).get('href')
 
             print(f'Parsing results: {(count * 15) + 1} - {(count + 1) * 15}')
             response = requests.get(url)
-            count += 1
 
             soup = BeautifulSoup(response.text, 'html.parser')
             raw_cards = get_raw_cards(soup)
@@ -99,6 +95,11 @@ def main():
     with open(file_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(['JobID', 'JobTitle', 'CompanyName', 'CompanyRating', 'JobLocation', 'PostDate', 'JobUrl'])
-        writer.writerows([(record.id, record.title, record.company, record.rating, record.location, record.date, record.link) for record in records])
-
-main()
+        writer.writerows([(record.card_id, record.title, record.company, record.rating, record.location, record.date, record.link) for record in records])
+    
+    # Make GET requests for each job posting, in individual threads.
+    count = 1
+    for record in records:
+        record.details.process_id = count
+        record.details.start()
+        count += 1
