@@ -1,37 +1,27 @@
-## Welcome to GitHub Pages
+## Welcome to the Job Scraper project!
 
-You can use the [editor on GitHub](https://github.com/mikeyo89/job-scraper/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+This project will analyze Indeed's HTML and extrapolate summary data -- such as the number of results that seek a particular Framework or Programming Language.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Steps to Reproduce
 
-### Markdown
+1. Clone this repo using git or github desktop.
+2. In a local or virtual environment, ensure to install pip or pip3.\
+   This can be done by checking out the documentation on <a href="https://pip.pypa.io/en/stable/installing/">pip</a>.
+3. Navigate to the project directory -- only 1 folder (src) and the various files will be located here.
+4. In a command shell -- such as bash, windows shell, or zsh -- run the following command:\
+    *pip3 install -r requirements.txt*
+5. Navigate into the src directory.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### All dependencies are now installed!
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+**From here, simply run any of the following files:**
+```
+1. mvp.py
+2. mvp2.py
+3. poc.py
+4. poc2.py
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+_**Note:** `mvp.py` `mvp2.py` make **real** `GET` requests to Indeed. If you would prefer not to do so, run `poc.py` or `poc2.py` instead._
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/mikeyo89/job-scraper/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+That is all, folks!
