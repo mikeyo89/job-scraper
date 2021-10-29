@@ -1,15 +1,15 @@
-import os
 import requests
-import csv
 import sys
 
 # Adding models to the system path.
 sys.path.insert(0, '/Users/michaelbonilla/Documents/0 Eastern Connecticut State University/2 2021FA/0 CSC-450 Senior Research/0 Assignments/Research Project/job-scraper/src')
 
 from bs4 import BeautifulSoup
-from models.cards import BasicCard, CardDetails
+from models.cards import BasicCard
+from models.metrics import pl, f
+import copy
 
-card_id = 1
+card_id = 0
 success = 0
 failure = 0
 
@@ -29,7 +29,6 @@ def get_card(raw_card):
     '''
     # Get unique id from global id count.
     global card_id
-    id = card_id
     card_id += 1 # Incremend global_id so it is different for next card.
 
     # Extract high-level data from 'card'.
@@ -57,19 +56,22 @@ def get_card(raw_card):
     # Job Link (href).
     link = 'https://www.indeed.com' + raw_card.get('href')
 
-    return BasicCard(id, title, company, rating, location, date, link)
+    return BasicCard(card_id, title, company, rating, location, date, link)
 
 if __name__ == '__main__':
     # Make an HTTP GET Request and save HTML text if request is successful.
     url = get_url('software engineer')
-    print('Parsing results: 1 - 15')
-    response = requests.get(url)
-
+    headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+    response = requests.get(url, headers=headers)
     # Create a BeautifulSoup object from HTTP response and extract all 'cards' (job postings).
     soup = BeautifulSoup(response.text, 'html.parser')
     raw_cards = get_raw_cards(soup)
 
+    if raw_cards is None:
+        print(f'raw_cards is none.\nCheck the url: {response.url}')
+
     # Perform field extraction for an entire collection of 'raw cards'.
+    print('Parsing results: 1 - 15')
     records = [get_card(raw_card) for raw_card in raw_cards]
     
     # Iterate through the pagination to collect all cards from the search query.
@@ -78,7 +80,7 @@ if __name__ == '__main__':
             url = 'https://www.indeed.com' + soup.find('a', {'aria-label': 'Next'}).get('href')
 
             print(f'Parsing results: {(count * 15) + 1} - {(count + 1) * 15}')
-            response = requests.get(url)
+            response = requests.get(url, headers=headers)
 
             soup = BeautifulSoup(response.text, 'html.parser')
             raw_cards = get_raw_cards(soup)
@@ -87,19 +89,20 @@ if __name__ == '__main__':
         except AttributeError:
             break
     
-    file_path = '/Users/michaelbonilla/Documents/0 Eastern Connecticut State University/2 2021FA/0 CSC-450 Senior Research/0 Assignments/Research Project/job-scraper/src/test/results.csv'
-
-    if os.path.exists(file_path):
-        os.remove(file_path)
-
-    with open(file_path, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(['JobID', 'JobTitle', 'CompanyName', 'CompanyRating', 'JobLocation', 'PostDate', 'JobUrl'])
-        writer.writerows([(record.card_id, record.title, record.company, record.rating, record.location, record.date, record.link) for record in records])
-    
-    # Make GET requests for each job posting, in individual threads.
-    count = 1
+    # Make GET requests for each job posting, in individual processes.
     for record in records:
-        record.details.process_id = count
+        record.details.programming_languages = copy.deepcopy(pl)
+        record.details.frameworks = copy.deepcopy(f)
         record.details.start()
-        count += 1
+    
+    for record in records:
+        record.details.join()
+        record.details.update_criterion()
+
+    for record in records:
+        if record.details.thread_suceeded:
+            success += 1
+        else:
+            failure += 1
+        
+        record.details.report_criterion()
