@@ -76,5 +76,5 @@ f = [
     ['azure', False],
     ['kubernetes', False],
     ['swagger', False],
-    [['scrum', 'agile', False]]
+    [['scrum', 'agile'], False]
 ]
