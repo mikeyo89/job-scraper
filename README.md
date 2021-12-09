@@ -7,14 +7,13 @@ This project will analyze Indeed's HTML and extrapolate summary data -- such as 
 1. Clone this repo using git or github desktop.
 2. In a local or virtual environment, ensure to install pip or pip3.\
    This can be done by checking out the documentation on <a href="https://pip.pypa.io/en/stable/installing/">pip</a>.
-3. Navigate to the project directory -- only 1 folder (src) and the various files will be located here.
-4. In a command shell -- such as bash, windows shell, or zsh -- run the following command:\
-    *pip3 install -r requirements.txt*
-5. Navigate into the src directory.
+3. Navigate to the project directory -- 2 folders (research_scripts and web_app) and various files will be located here.
+4. Open a command shell -- such as bash, windows shell, or zsh -- and run the following command:\
+    `pip3 install -r requirements.txt`
 
 ### All dependencies are now installed!
 
-**From here, simply run any of the following files:**
+**From here, simply navigate to the research_scripts folder and run any of the following files:**
 ```
 1. mvp.py
 2. mvp2.py
@@ -22,6 +21,12 @@ This project will analyze Indeed's HTML and extrapolate summary data -- such as 
 4. poc2.py
 ```
 
-_**Note:** `mvp.py` `mvp2.py` make **real** `GET` requests to Indeed. If you would prefer not to do so, run `poc.py` or `poc2.py` instead._
+**... or run the web by doing the following:**
+1. Navigate into the web_app directory.
+2. In a command shell, run the following command:
+    `python manage.py runserver`
+3. Use the application as intended and you will make GET requests to Indeed!
+
+_**Note:** `mvp.py` `mvp2.py` make **real** `GET` requests to Indeed. If you would prefer not to do so, run `poc.py`, `poc2.py`, or visit the demo of this app <a href="https://www.michaelbonilla.dev/scraper/">here</a> instead._
 
 That is all, folks!

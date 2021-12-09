@@ -1,0 +1,66 @@
+{% extends 'basejs.html' %}
+{% load static %}
+
+{% block header %}
+<header class="page-header" role="banner">
+    <h1 class="project-name">Picklr – A Job Scraping Tool</h1>
+      <br>
+    <h2 class="project-tagline">
+          Picklr will analyze Indeed's HTML and extrapolate summary data,<br>
+          such as the number of results that seek a particular Framework or Programming Language.<br><br>
+          
+          <section class="fst-italic">Think this is cool? Check out my other work via <a href="https:www.michaelbonilla.dev/" class="text-decor-no text-white fw-bold" target="_blank">my portfolio</a>.</section>
+      </h2>
+  <a href="https://github.com/mikeyo89/job-scraper" class="btn btn-light" target="_blank">View on GitHub</a>
+</header>
+{% endblock header %}
+
+{% block js %}
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+{% endblock js %}
+
+{% block content %}
+<!--div class="alert alert-info alert-dismissible fade show" role="alert">
+    <strong>Note:</strong> This is a <em>pre-release</em> version of Picklr.
+    Searching any query below will display the same <strong>real</strong> cached results.<br>
+    It is a sample view of the app! More functionality to come soon 🙂
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div-->
+
+<h2>Scrape them jobs</h2><br>
+
+<form method="GET" action="{% url 'job_scraper:search' %}">
+    <div class="row">
+        <div class="col-5">
+            <label for="what" class="form-label h3">What</label>
+            <input type="text" class="form-control" id="what" name="what" placeholder="Software Engineer" required>
+        </div>
+        <div class="col-5">
+            <label for="where" class="form-label h3">Where</label>
+            <input type="text" class="form-control" id="where" name="where" placeholder="San Francisco, California">
+            <div id="where" class="form-text text-muted h6">Filter by location</div>
+        </div>
+    </div><br>
+
+    <div class="row">
+        <div class="col-5">
+            <label for="amount" class="form-label h3">Amount</label>
+            <select class="form-select" aria-label="Number of Results Select" id="amount" name="amount">
+                <option id="default" value="default">Choose amount of results...</option>
+                {% for x in range %}
+                <option id="{{ x }}" value="{{ x }}">{{ x }}</option>
+                {% endfor %}
+            </select>
+            <div id="amount" class="form-text text-muted h6"># of search results to parse.</div>
+        </div>
+    </div><br><br>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+{% endblock content %}
+
+{% block script %}
+<script>
+    
+</script>
+{% endblock script %}

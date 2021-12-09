@@ -1,0 +1,207 @@
+{% extends 'basejs.html' %}
+{% load static %}
+
+{% block js %}
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/chart.min.js' %}"></script>
+{% endblock js %}
+
+{% block content %}
+<h4>
+    {% if amount %} <b>{{ amount }}</b> results {% else %} Results {% endif %}
+    {% if what %}
+    for <b>{{ what }}</b> {% if where %} in <b>{{ where }}</b>{% endif %}
+    {% endif %}
+</h4><br>
+
+<form method="GET" action="{% url 'job_scraper:search' %}">
+    <div class="row">
+        <div class="d-flex align-items-start">
+            <!-- Tab Lists -->
+            <div class="col-2 nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link active" id="v-pills-programming-tab" data-bs-toggle="pill" data-bs-target="#v-pills-programming" type="button" role="tab" aria-controls="v-pills-programming" aria-selected="true">Dev Languages</button>
+                <button class="nav-link" id="v-pills-tools-tab" data-bs-toggle="pill" data-bs-target="#v-pills-tools" type="button" role="tab" aria-controls="v-pills-tools" aria-selected="false">Dev Tools</button>
+                <button class="nav-link" id="v-pills-results-tab" data-bs-toggle="pill" data-bs-target="#v-pills-results" type="button" role="tab" aria-controls="v-pills-results" aria-selected="false">Raw Results</button>
+                <button class="nav-link" id="v-pills-search-tab" data-bs-toggle="pill" data-bs-target="#v-pills-search" type="button" role="tab" aria-controls="v-pills-search" aria-selected="false">New Search</button>
+            </div>
+
+            <div class="col-1"></div>
+
+            <!-- Tab Panels -->
+            <div class="col-8 tab-content" id="v-pills-tabContent">
+                <!-- Programming Languages Tab -->
+                <div class="tab-pane fade show active" id="v-pills-programming" role="tabpanel" aria-labelledby="v-pills-programming-tab">
+                    <canvas id="PLGraph" height="200"></canvas>
+                    <script>
+                    const pctx = document.getElementById('PLGraph').getContext('2d');
+                    const PLGraph = new Chart(pctx, {
+                        type: 'bar',
+                        data: {
+                            datasets: [{
+                                label: ' # of entries',
+                                data: {{ pl.1|safe }},
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 2
+                            }],
+                            labels: {{ pl.0|safe }},
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                    </script>
+                </div>
+
+                <!-- Tools Tab -->
+                <div class="tab-pane fade" id="v-pills-tools" role="tabpanel" aria-labelledby="v-pills-tools-tab">
+                    <canvas id="TGraph" height="200"></canvas>
+                    <script>
+                    const tctx = document.getElementById('TGraph').getContext('2d');
+                    const TGraph = new Chart(tctx, {
+                        type: 'bar',
+                        data: {
+                            datasets: [{
+                                label: ' # of entries',
+                                data: {{ f.1|safe }},
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }],
+                            labels: {{ f.0|safe }},
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                    </script>
+                </div>
+
+                <!-- Raw Results Tab -->
+                <div class="tab-pane fade" id="v-pills-results" role="tabpanel" aria-labelledby="v-pills-results-tab">
+                    <div class="row">
+                        <div class="col-6">
+                            <b>Cards Succeeded:</b> {{ parser.success_count }}
+                        </div>
+                        <div class="col-6">
+                            <b>Cards Failed:</b> {{ parser.failure_count }}
+                        </div>
+                    </div>
+                    {% if parser %}
+                        {% for cards in parser.cards %}
+                        <br><button class="btn btn-outline-dark w-100" type="button" data-bs-toggle="collapse" data-bs-target="#results{{ cards.0.card_id }}" aria-expanded="false" aria-controls="results{{ cards.0.card_id }}">
+                                <strong>Results {{ cards.0.card_id }} - {{ cards.14.card_id }}</strong>
+                            </button>
+                            <div class="collapse" id="results{{ cards.0.card_id }}">
+                                <div class="card card-body bg-dark text-white">
+                                    {% for card in cards %}
+                                        <div class="row">
+                                            <div class="col-2">
+                                                {{ card.card_id }}.
+                                            </div>
+                                            <div class="col-8">
+                                                <a href="{{ card.url }}" class="text-decor-no" target="_blank">{{ card.title }}</a>
+                                            </div>
+                                            <div class="col-2">
+                                                {% if card.details.thread_suceeded %} ✅ {% else %} ❌ {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-2">
+                                                
+                                            </div>
+                                            <div class="col-10">
+                                                {% for pl in card.details.programming_languages %}
+                                                    {% if pl.1 == True %}
+                                                        &nbsp;<b>|</b>&nbsp; {% if pl.0.0 %} {{ pl.0 }} {% else %} {{ pl.0 }} {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <br>
+                                                {% for f in card.details.frameworks %}
+                                                    {% if f.1 == True %}
+                                                        &nbsp;<b>|</b>&nbsp; {% if f.0.0 %} {{ f.0 }} {% else %} {{ f.0 }} {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <!-- New Search Tab -->
+                <div class="tab-pane fade" id="v-pills-search" role="tabpanel" aria-labelledby="v-pills-search-tab">
+                    <label for="what" class="form-label h5">What</label>
+                    <input type="text" class="form-control" id="what" name="what" placeholder="Software Engineer" value="{% if what %}{{ what }}{% endif %}" required>
+                    <br><br>
+                    
+                    <label for="where" class="form-label h5">Where</label>
+                    <input type="text" class="form-control" id="where" name="where" placeholder="San Francisco, California" value="{% if where %}{{ where }}{% endif %}">
+                    <div id="where" class="form-text h6">Filter by location</div>
+                    <br>
+        
+                    <label for="amount" class="form-label h5">Amount</label>
+                    <select class="form-select" aria-label="Number of Results Select" id="amount" name="amount">
+                        <option id="0" value="0">Choose amount of results...</option>
+                        {% for x in range %}
+                        <option id="{{ x }}" value="{{ x }}" {% if x == amount %}selected{% endif %}>{{ x }}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="amount" class="form-text text-muted h6"># of search results to parse.</div>
+                    <br>
+        
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>    
+</form>
+{% endblock content %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.collapsible');
+    var instances = M.Collapsible.init(elems);
+  });
+</script>
+{% endblock script %}
