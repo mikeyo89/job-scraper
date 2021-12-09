@@ -1,6 +1,7 @@
 ## Welcome to the Job Scraper project!
 
 This project will analyze Indeed's HTML and extrapolate summary data -- such as the number of results that seek a particular Framework or Programming Language.
+### View a demo of the application <a href="https://www.michaelbonilla.dev/scraper/">here</a>.###
 
 ### Steps to Reproduce
 
@@ -13,7 +14,14 @@ This project will analyze Indeed's HTML and extrapolate summary data -- such as 
 
 ### All dependencies are now installed!
 
-**From here, simply navigate to the research_scripts folder and run any of the following files:**
+**From here, simply run the web-app by doing the following:**
+1. Navigate into the web_app directory.
+2. In a command shell, run the following command:
+    `python manage.py runserver`
+3. Navigate to <a href="localhost:8000">localhost:8000</a> on your favorite browser.
+4. You're free to use the application as you wish!
+
+**... or navigate to the research_scripts folder and run any of the following files to locally try the project:**
 ```
 1. mvp.py
 2. mvp2.py
@@ -21,12 +29,7 @@ This project will analyze Indeed's HTML and extrapolate summary data -- such as 
 4. poc2.py
 ```
 
-**... or run the web by doing the following:**
-1. Navigate into the web_app directory.
-2. In a command shell, run the following command:
-    `python manage.py runserver`
-3. Use the application as intended and you will make GET requests to Indeed!
-
 _**Note:** `mvp.py` `mvp2.py` make **real** `GET` requests to Indeed. If you would prefer not to do so, run `poc.py`, `poc2.py`, or visit the demo of this app <a href="https://www.michaelbonilla.dev/scraper/">here</a> instead._
 
-That is all, folks!
+
+**That is all, folks!**
