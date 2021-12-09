@@ -1,7 +1,6 @@
 ## Welcome to the Job Scraper project!
 
-This project will analyze Indeed's HTML and extrapolate summary data -- such as the number of results that seek a particular Framework or Programming Language.
-### View a demo of the application <a href="https://www.michaelbonilla.dev/scraper/">here</a>.###
+This project will analyze Indeed's HTML and extrapolate summary data -- such as the number of results that seek a particular Framework or Programming Language. **View a demo of the application <a href="https://www.michaelbonilla.dev/scraper/">here</a>.**
 
 ### Steps to Reproduce
 
