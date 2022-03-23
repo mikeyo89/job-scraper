@@ -167,13 +167,13 @@
                                                 <div class="col-10 offset-2">
                                                     {% for pl in card.details.programming_languages %}
                                                         {% if pl.1 == True %}
-                                                            <span class="btn btn-light rounded-pill" style="margin-top: 15px; margin-left: 0; margin-bottom: 0; max-width: 40%; max-height: 40px; font-size: .9em;">{{ pl.0 }}</span>
+                                                            <span class="btn btn-light rounded-pill" style="margin-top: 15px; margin-left: 0; margin-bottom: 0; max-width: 43%; max-height: 40px; font-size: .9em;">{{ pl.0 }}</span>
                                                         {% endif %}
                                                     {% endfor %}
 
                                                     {% for f in card.details.frameworks %}
                                                         {% if f.1 == True %}
-                                                            <span class="btn btn-secondary rounded-pill" style="margin-top: 15px; margin-left: 0; margin-bottom: 0; max-width: 40%; max-height: 40px; font-size: .9em;">{{ f.0 }}</span>
+                                                            <span class="btn btn-secondary rounded-pill" style="margin-top: 15px; margin-left: 0; margin-bottom: 0; max-width: 43%; max-height: 40px; font-size: .9em;">{{ f.0 }}</span>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </div>
@@ -332,10 +332,10 @@
                     <div class="tab-pane fade" id="v-pills-results-dk" role="tabpanel" aria-labelledby="v-pills-results-tab-dk">
                         <div class="row">
                             <div class="col-6 text-success">
-                                <b>Cards Succeeded:</b> {{ parser.success_count }} ✅
+                                <b>Jobs Parsed:</b> {{ parser.success_count }} ✅
                             </div>
                             <div class="col-6 text-danger">
-                                <b>Cards Failed:</b> {{ parser.failure_count }} ❌
+                                <b>Jobs Failed:</b> {{ parser.failure_count }} ❌
                             </div>
                         </div>
                         {% if parser %}

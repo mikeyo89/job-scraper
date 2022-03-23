@@ -172,7 +172,7 @@ class JobDataModel:
         ['Sinatra', 0],
         ['Materialize', 0],
         ['Bootstrap', 0],
-        ['Tailwind CSS', 0],
+        ['Tailwind', 0],
         ['Ionic', 0],
         ['Xamarin', 0],
         ['Phonegap', 0],
