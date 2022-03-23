@@ -11,7 +11,7 @@
           
           <section class="fst-italic">Think this is cool? Check out my other work via <a href="https:www.michaelbonilla.dev/" class="text-decor-no text-white fw-bold" target="_blank">my portfolio</a>.</section>
       </h2>
-  <a href="https://github.com/mikeyo89/job-scraper" class="btn btn-light" target="_blank">View on GitHub</a>
+  <a href="https://github.com/mikeyo89/job-scraper" class="btn btn-light rounded-pill" target="_blank">View on GitHub</a>
 </header>
 {% endblock header %}
 
@@ -31,11 +31,12 @@
 
 <form method="GET" action="{% url 'job_scraper:search' %}">
     <div class="row">
-        <div class="col-5">
+        <div class="col-sm-6">
             <label for="what" class="form-label h3">What</label>
             <input type="text" class="form-control" id="what" name="what" placeholder="Software Engineer" required>
         </div>
-        <div class="col-5">
+        <div class="d-block d-md-none pt-2"><br></div>
+        <div class="col-sm-6">
             <label for="where" class="form-label h3">Where</label>
             <input type="text" class="form-control" id="where" name="where" placeholder="San Francisco, California">
             <div id="where" class="form-text text-muted h6">Filter by location</div>
@@ -43,7 +44,7 @@
     </div><br>
 
     <div class="row">
-        <div class="col-5">
+        <div class="col-sm-6">
             <label for="amount" class="form-label h3">Amount</label>
             <select class="form-select" aria-label="Number of Results Select" id="amount" name="amount">
                 <option id="default" value="default">Choose amount of results...</option>
@@ -55,7 +56,7 @@
         </div>
     </div><br><br>
 
-    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="submit" class="btn btn-primary rounded-pill">Search</button>
 </form>
 {% endblock content %}
 

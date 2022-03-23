@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.views import generic
 from django.core.cache import caches
 
-from job_scraper.models import JobCardModel
+from job_scraper.models import JobDataModel
 from .services import JobCardService, JobDataService
 
 # Create your views here.
@@ -47,7 +47,7 @@ class SearchView(generic.TemplateView):
             self.slice_cards()
             if self.parser:
                 cache.set(search_query, self.parser)
-
+        
         self.extracter = JobDataService(self.parser.cards)
         programming_language = [[],[]]  # [ [labels], [data] ]
         frameworks = [[],[]]            # [ [labels], [data] ]
@@ -55,7 +55,7 @@ class SearchView(generic.TemplateView):
         if self.extracter:
             self.extracter.reset_counts()
             self.extracter.get_counts()
-            self.extracter.update_counts()
+            self.extracter.filter_counts()
 
             for pl_count in self.extracter.pl_counts:
                 programming_language[0].append(pl_count[0]) # Appends labels for data.
@@ -64,7 +64,29 @@ class SearchView(generic.TemplateView):
             for f_count in self.extracter.f_counts:
                 frameworks[0].append(f_count[0]) # Appends labels for data.
                 frameworks[1].append(f_count[1]) # Appends data for graphs.
-                
+
+        # Raw Card text optimizations.
+        for card in self.extracter.cards:
+            labeled_pl = JobDataModel.pl
+            labeled_f = JobDataModel.f
+
+            # Fix 'Date Posted' Text.
+            card.date = 'Posted: ' + card.date[6:]
+
+            # Show -.- if the Card has no rating.
+            if card.rating == 'None' or None:
+                card.rating = '--'
+            
+            # Neater text of technologies found in Cards.
+            index = 0
+            for pl in card.details.programming_languages:
+                pl[0] = labeled_pl[index][0]
+                index += 1
+            
+            index = 0
+            for f in card.details.frameworks:
+                f[0] = labeled_f[index][0]
+                index += 1
 
         context.update(
             {
@@ -101,6 +123,7 @@ class SearchView(generic.TemplateView):
     
     def slice_cards(self):
         ''' Slices cards into even chunks of 15. '''
+        print('Splitting', len(self.parser.cards), 'into even cuts of 15 each.')
         self.parser.cards = [self.parser.cards[x:x+15] for x in range(0, len(self.parser.cards), 15)]
     
     def get_success_url(self):

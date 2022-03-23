@@ -61,7 +61,7 @@ class JobMetricsModel:
         ['assembly', False],
         ['swift', False],
         ['pascal', False],
-        [['objective-c', 'objectivec'], False],
+        ['objectivec', False],
         ['php', False],
         [['go', 'golang'], False],
         ['perl', False],
@@ -73,20 +73,20 @@ class JobMetricsModel:
     ]
 
     f = [
-        [['dotnet', '.net', 'asp.net', 'aspnet', 'net'], False],
-        [['react', 'reactjs', 'react.js'], False],
-        [['angular', 'angular.js', 'angularjs', 'angular2+', 'angular3+'], False],
+        [['dotnet', 'net', 'aspnet'], False],
+        [['react', 'reactjs'], False],
+        [['angular', 'angularjs', 'angular2+', 'angular3+'], False],
         ['django', False],
         ['splunk', False],
         ['spring', False],
         ['rails', False],
         ['redux', False],
-        [['express', 'expressjs', 'express.js'], False],
-        [['vue', 'vuejs', 'vue.js'], False],
+        [['express', 'expressjs'], False],
+        [['vue', 'vuejs'], False],
         ['flask', False],
         ['laravel', False],
         ['symfony', False],
-        [['gatsby', 'gatsbyjs', 'gatsby.js'], False],
+        [['gatsby', 'gatsbyjs'], False],
         ['sinatra', False],
         ['materialize', False],
         ['bootstrap', False],
@@ -100,8 +100,8 @@ class JobMetricsModel:
         ['flutter', False],
         ['pytorch', False],
         ['pandas', False],
-        [['sci-kit', 'scikit'], False],
-        [['ml.net', 'mlnet'], False],
+        ['scikit', False],
+        ['mlnet', False],
         ['chainer', False],
         ['pytest', False],
         ['jest', False],
@@ -123,7 +123,8 @@ class JobMetricsModel:
         ['azure', False],
         ['kubernetes', False],
         ['swagger', False],
-        [['scrum', 'agile'], False]
+        [['scrum', 'agile'], False],
+        ['aws', False]
     ]
 
 class JobDataModel:
@@ -182,7 +183,7 @@ class JobDataModel:
         ['PyTorch', 0],
         ['Pandas', 0],
         ['Sci-kit', 0],
-        ['ML.net', 0],
+        ['ML.Net', 0],
         ['Chainer', 0],
         ['PyTest', 0],
         ['Jest', 0],
@@ -204,5 +205,6 @@ class JobDataModel:
         ['MS Azure', 0],
         ['Kubernetes', 0],
         ['Swagger', 0],
-        ['Scrum/Agile', 0]
+        ['Scrum/Agile', 0],
+        ['AWS', 0]
     ]
