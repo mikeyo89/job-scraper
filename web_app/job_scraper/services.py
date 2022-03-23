@@ -1,9 +1,7 @@
 import requests
 import copy
-import time
-import random
 
-from .models import JobCardModel, JobDetailsModel, JobMetricsModel, HttpHeadersModel, JobDataModel
+from .models import JobCardModel, JobMetricsModel, HttpHeadersModel, JobDataModel
 from bs4 import BeautifulSoup
 from threading import Thread
 
@@ -29,11 +27,11 @@ class JobCardService:
     
     def __init__(self, position: str, *args):
         ''' Default constructor, with a job position specified. '''
-        pos = position.replace(' ', '%20')
+        pos = position.replace(' ', '+')
         if len(args) == 0:
             self.url = self.get_url(pos)
         else:
-            location = args[0].replace(' ', '%20')
+            location = args[0].replace(' ', '+')
             self.url = self.get_url(pos, location)
     
     def parse_page_results(self) -> None:
@@ -63,7 +61,6 @@ class JobCardService:
                 url = 'https://www.indeed.com' + soup.find('a', {'aria-label': 'Next'}).get('href')
 
                 print(f'Parsing results {count + 1} - {count + 15}: url = {url}')
-                headers = {'user-agent': self.user_agents[random.randint(0, self.user_agents_count)]}
                 response = requests.get(url, headers=headers)
                 soup = BeautifulSoup(response.text, 'html.parser') if response.status_code == 200 else None
                 if soup is None:
@@ -76,6 +73,7 @@ class JobCardService:
                 parsed_cards = self.parse_card_details(cards = [self.get_card(raw_card) for raw_card in raw_cards])
                 self.cards.extend(parsed_cards)
             except AttributeError:
+                print('There is an attribute error!!')
                 continue
         
         '''
@@ -117,19 +115,29 @@ class JobCardService:
         with a card id, job title, company name, company rating, company location, and job link.
         '''
         card_content = raw_card.find('td')
-        company_content = card_content.pre
+        company_content = card_content.find('div', class_='companyInfo')
 
         self.card_id += 1
         try:
-            title = card_content.div.h2.find('span', title=True).text
-            company = company_content.find('span', 'companyName').text
-            raw_rating = company_content.find('span', 'ratingsDisplay')
-            rating = raw_rating.text if raw_rating is not None else 'None'
-            raw_location = company_content.find('div', 'companyLocation')
-            location = raw_location.text if raw_location else 'None'
-
-            date = raw_card.find('span', 'date').text
+            # Job Link (href)
             url = 'https://www.indeed.com' + raw_card.get('href')
+
+            # Job Title
+            title = card_content.find('span', title=True).get_text()
+
+            # Company Name
+            company = company_content.find('span', 'companyName').get_text()
+
+            # Company Rating
+            raw_rating = company_content.find('span', 'ratingNumber')
+            rating = raw_rating.get_text() if raw_rating else 'None'
+
+            # Company Location
+            raw_location = company_content.find('div', 'companyLocation')
+            location = raw_location.get_text() if raw_location else 'None Found'
+
+            # Posting Date
+            date = raw_card.find('span', 'date').get_text()
 
             return JobCardModel(self.card_id, title, company, rating, location, date, url)
         except AttributeError:
@@ -148,7 +156,6 @@ class JobCardService:
     def parse_card_details(self, cards):
         ''' Parses through all individual job posts, updates the metrics data, and returns parsed cards. '''
         count = 0
-        threads = []
         for card in cards:
             if card:
                 count += 1
@@ -157,13 +164,10 @@ class JobCardService:
                 card.details.frameworks = copy.deepcopy(JobMetricsModel.f)
 
                 thread = Thread(target=self.update_card_metrics, args=(card,))
-                threads.append(thread)
                 thread.start()
+                thread.join()
             else:
                 print(f'Card is None. card.url = {card}')
-        
-        for thread in threads:
-            thread.join()
 
         for card in cards:
             if card.details.thread_suceeded:
@@ -200,8 +204,8 @@ class JobCardService:
             return
 
         # Clean (again) the job text into list of individual words (word vector).
-        translation_table = dict.fromkeys(map(ord, ":;?|=~!@'(){}[]"), None)  # List of chars to remove.
-        clean_words = [word.translate(translation_table).strip('.').strip() for word in split_text]
+        translation_table = dict.fromkeys(map(ord, ".:;?|=~!@'(){}[]"), None)  # List of chars to remove.
+        clean_words = [word.translate(translation_table).strip() for word in split_text]
 
         # Iterate through each word in the job description.
         for word in clean_words:
@@ -263,7 +267,9 @@ class JobDataService:
 
     def __init__(self, cards) -> None:
         ''' Default constructor with cards object.'''
-        self.cards = cards[0]
+        self.cards = []
+        for card in cards:
+            self.cards += card
 
     def reset_counts(self):
         ''' Reset count of the counts. '''
@@ -292,7 +298,7 @@ class JobDataService:
                     self.f_counts[index][1] += 1
                 index += 1
     
-    def update_counts(self):
-        ''' Sorts the counts lists in descending order and returns the top 7 items. '''
+    def filter_counts(self):
+        ''' Sorts the counts lists in descending order and returns the top 10 items. '''
         self.pl_counts = sorted(self.pl_counts, key=lambda pl: pl[1], reverse=True)[:10]
         self.f_counts = sorted(self.f_counts, key=lambda f: f[1], reverse=True)[:10]

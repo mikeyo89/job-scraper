@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-
+from bs4.element import Tag
 '''
 Simple Card Objects:
 Card {
@@ -7,51 +7,49 @@ Card {
     company,
     location,
     rating,
-    link
+    link,
+    url
 }
 '''
 
 # Open local text file of Indeed results HTML. 
-with open('src/test/sample.txt', 'r') as file:
-    text = file.read()
-    file.close()
-
-# Create a BeautifulSoup object with sample.txt HTML.
-soup = BeautifulSoup(text, 'html.parser')
+with open('sample2.txt', 'rt') as file:
+    # Create a BeautifulSoup object with sample.txt HTML.
+    soup = BeautifulSoup(file, 'html.parser')
 
 # Find all 'cards' (job postings) in HTML Document.
 raw_cards = soup.select('a.tapItem.fs-unmask.result')
 
 # Create a function that runs the above extractions and returns the 'card' object.
-def get_card(raw_card):
+def get_card(raw_card: Tag):
     '''
     Takes an individual 'raw_card' and returns the processed 'card' object
     with a job title, company name, company rating, company location, and job link.
     '''
 
+    # Job Link (href)
+    link = 'https://www.indeed.com' + raw_card.get('href')
+
     # Extract high-level data from 'card'.
     card_content = raw_card.find('td')
 
     # Find all company data from 'card' (name, rating, location)
-    company_content = card_content.pre
+    company_content = card_content.find('div', class_='companyInfo')
 
     # Job Title
-    title = card_content.div.h2.find('span', title=True).text
+    title = card_content.find('span', title=True).get_text()
 
     # Company Name
-    company = company_content.find('span', 'companyName').text
+    company = company_content.find('span', 'companyName').get_text()
 
     # Company Rating
-    rating = company_content.find('span', 'ratingsDisplay')
+    rating = company_content.find('span', 'ratingNumber')
 
     # Company Location
-    location = company_content.find('div', 'companyLocation').contents[0].text
+    location = company_content.find('div', 'companyLocation').get_text()
 
     # Posting Date
-    date = raw_card.find('span', 'date').text
-
-    # Job Link (href)
-    link = 'https://www.indeed.com' + raw_card.get('href')
+    date = raw_card.find('span', 'date').get_text()
 
     return {
         'title': title,
@@ -64,4 +62,8 @@ def get_card(raw_card):
 
 # Perform field extraction for an entire collection of raw cards.
 cards = [get_card(raw_card) for raw_card in raw_cards]
-print(cards)
+
+with open('results.csv', 'w+') as f:
+    f.write('JobTitle,CompanyName,CompanyRating,JobLocation,PostDate,JobUrl\n')
+    lines = [(f'{card["title"]}, {card["company"]}, {card["rating"]}, {card["location"]}, {card["date"]}, {card["link"]}\n') for card in cards]
+    f.writelines(lines)
